@@ -1,7 +1,7 @@
-from typing import List
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 import requests
+import sys
 
 def get_links(url: str):
     """Find all links on page at the given url.
@@ -40,14 +40,14 @@ def is_valid_url(url: str):
     """
     try:
         response = requests.head(url)
-    except (requests.ConnectionError, requests.ConnectTimeout)
+    except (requests.ConnectionError, requests.ConnectTimeout):
         return False
     if not response.ok:
         return False
     return True
 
 
-def invalid_urls(urllist: List) -> List[str]:
+def invalid_urls(urllist: list):
     """Validate the urls in urllist and return a new list containing
     the invalid or unreachable urls.
     """
@@ -57,3 +57,20 @@ def invalid_urls(urllist: List) -> List[str]:
             invalid_url.append(url)
     return invalid_url
 
+
+if __name__ == "__main__":
+    try:
+        url = sys.argv[1]
+    except:
+        print("Usage: python3 link_scan.py url \n\nTest all hyperlinks on the given url.")
+        url = []
+    all_url = get_links(url)
+    bad_url = invalid_urls(all_url)
+    str = ""
+    for url in all_url:
+        str += url + "\n"
+    if len(bad_url) > 0:
+        str += "\nBad Links:\n"
+    for url in bad_url:
+        str += url + "\n"
+    print(str)
